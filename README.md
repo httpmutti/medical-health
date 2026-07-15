@@ -8,13 +8,17 @@
     <img src="https://img.shields.io/badge/-Expo-black?style=for-the-badge&logoColor=white&logo=expo&color=000020" />
     <img src="https://img.shields.io/badge/-TypeScript-black?style=for-the-badge&logoColor=white&logo=typescript&color=3178C6" />
     <br/>
+    <img src="https://img.shields.io/badge/-NestJS-black?style=for-the-badge&logoColor=white&logo=nestjs&color=E0234E" />
+    <img src="https://img.shields.io/badge/-Prisma-black?style=for-the-badge&logoColor=white&logo=prisma&color=2D3748" />
+    <img src="https://img.shields.io/badge/-PostgreSQL-black?style=for-the-badge&logoColor=white&logo=postgresql&color=336791" />
+    <br/>
     <img src="https://img.shields.io/badge/-NativeWind-black?style=for-the-badge&logoColor=38BDF8&logo=tailwindcss&color=0F172A" />
-    <img src="https://img.shields.io/badge/-Expo_Router-black?style=for-the-badge&logoColor=white&logo=expo&color=1C1C1E" />
+    <img src="https://img.shields.io/badge/-Redux_Toolkit-black?style=for-the-badge&logoColor=white&logo=redux&color=764ABC" />
     <img src="https://img.shields.io/badge/-League_Spartan-black?style=for-the-badge&logoColor=white&logo=googlefonts&color=4285F4" />
   </div>
 
   <h3 align="center">Skin Firts — Dermatology Center</h3>
-  <p align="center">A pixel-perfect, design-token-driven dermatology mobile app built with Expo & NativeWind</p>
+  <p align="center">A full-stack dermatology mobile application — Expo frontend + NestJS backend with JWT auth, Redis OTP, and PostHog analytics</p>
 </div>
 
 ---
@@ -26,65 +30,79 @@
 3. 🔋 [Features](#features)
 4. 🗂️ [Project Structure](#project-structure)
 5. 🎨 [Design System](#design-system)
-6. 🤸 [Quick Start](#quick-start)
+6. 🔐 [Auth Architecture](#auth-architecture)
+7. 🤸 [Quick Start](#quick-start)
 
 ---
 
 ## <a name="introduction">✨ Introduction</a>
 
-**Skin Firts** is a modern dermatology mobile application built with **Expo SDK 57**, **React Native 0.86**, and **NativeWind v4**. The app connects patients with certified dermatologists, enabling them to book appointments, browse doctor profiles, and manage their skin health — all from the comfort of their phone.
+**Skin Firts** is a modern dermatology mobile application built with **Expo SDK 57**, **React Native 0.86**, and **NativeWind v4** on the frontend, and **NestJS**, **Prisma**, and **PostgreSQL** on the backend.
 
-The codebase follows a strict **design token architecture** — every color, font size, spacing value, and border radius is defined once in `tokens.ts` and mirrored in `tailwind.config.js`, ensuring a pixel-perfect, consistent UI across the entire app.
+The app connects patients with certified dermatologists — enabling appointment booking, doctor browsing, and skin health management from their phone. The codebase follows a strict **design token architecture** on the frontend and a **module-owned concerns** pattern on the backend: each module owns its own guards, decorators, DTOs, and services.
 
 ---
 
 ## <a name="tech-stack">⚙️ Tech Stack</a>
 
-- **[Expo](https://expo.dev/)**  
-  Managed workflow with SDK 57. Provides the runtime, build tooling, and native module ecosystem. Uses `expo-router` for file-based navigation and `expo-splash-screen` for a polished launch experience.
+### Frontend
 
-- **[React Native](https://reactnative.dev/)**  
-  Version 0.86 with React 19. Powers the cross-platform native UI, giving access to native components, gestures, and animations.
+| Technology | Purpose |
+|---|---|
+| **Expo SDK 57 + React Native 0.86** | Cross-platform mobile runtime and build tooling |
+| **Expo Router (file-based)** | `(auth)/` and `(home)/` route groups with typed routes |
+| **NativeWind v4** | Tailwind CSS utility classes in React Native via `className` |
+| **Redux Toolkit + RTK Query** | Global auth state + API layer with automatic token refresh |
+| **expo-secure-store** | iOS Keychain / Android Keystore for token and user persistence |
+| **PostHog React Native** | Screen tracking and user identification analytics |
+| **League Spartan** | Brand typeface — Light, Regular, Medium, SemiBold, Bold |
+| **TypeScript (strict)** | End-to-end type safety including navigation params |
 
-- **[Expo Router](https://expo.github.io/router/)**  
-  File-based routing built on top of React Navigation. Routes are co-located with screens using `(auth)/` and `(tabs)/` group conventions.
+### Backend
 
-- **[NativeWind v4](https://www.nativewind.dev/)**  
-  Brings Tailwind CSS utility classes to React Native. All styling is done via `className` with a fully custom design token config — no hardcoded colors or sizes anywhere in components.
-
-- **[TypeScript](https://www.typescriptlang.org/)**  
-  Strict mode enabled throughout. All design tokens, component props, and navigation params are fully typed.
-
-- **[League Spartan](https://fonts.google.com/specimen/League+Spartan)**  
-  The app's sole typeface, loaded via `@expo-google-fonts/league-spartan`. Used across five weights: Light, Regular, Medium, SemiBold, and Bold — each mapped to a named text style preset in `tokens.ts`.
-
-- **[React Native SVG](https://github.com/software-mansion/react-native-svg)**  
-  Renders all icons and the brand logo as crisp vector graphics at any resolution.
-
-- **[React Native Safe Area Context](https://github.com/th3rdwave/react-native-safe-area-context)**  
-  Handles notch, Dynamic Island, and home indicator insets reliably across all devices.
+| Technology | Purpose |
+|---|---|
+| **NestJS 10** | Modular Node.js framework with DI, guards, interceptors |
+| **Prisma 5 + PostgreSQL** | Type-safe ORM with migration-based schema management |
+| **ioredis + Upstash** | OTP storage and refresh token blacklist via Redis |
+| **nestjs-zod** | Zod-based validation — one schema produces DTO + types + runtime validation |
+| **JWT (Access + Refresh)** | 15-minute access tokens, 7-day refresh tokens with rotation and blacklisting |
+| **Passport.js** | `jwt-access` and `jwt-refresh` strategies |
+| **PostHog Node** | Server-side analytics for auth events |
+| **@nestjs/throttler** | Per-route rate limiting |
+| **Helmet** | HTTP security headers |
 
 ---
 
 ## <a name="features">🔋 Features</a>
 
-👉 **Welcome Screen** — Brand logo centered on screen with a tagline and two CTA buttons navigating to Login and Sign Up.
+### Auth Flow
 
-👉 **Log In** — Email/password login with "Forget Password" link, social sign-in (Google, Facebook, Fingerprint), and a "Sign Up" footer link.
+👉 **Register** — Full registration with first name, last name, email, mobile number, and password. Issues access + refresh token pair on success.
 
-👉 **Sign Up** — Full registration form with name, email, password, mobile number, date of birth, and terms & privacy policy agreement.
+👉 **Login** — Email/password with timing-attack prevention (bcrypt runs even for non-existent users). Issues token pair on success.
 
-👉 **Forgot Password Flow** — Three-step recovery: enter email → verify 6-digit OTP → set new password.
+👉 **Token Rotation** — On every `/auth/refresh`, the old refresh token is blacklisted in Redis and a new pair is issued.
 
-👉 **OTP Verification** — Six individual digit boxes with auto-advance, backspace navigation, filled-state border highlight, and a "Resend" link.
+👉 **Auto Token Refresh** — `baseQueryWithReauth` silently refreshes the access token on 401 and retries the original request — no user interaction required.
 
-👉 **Set Password** — Dual password fields with show/hide toggle using Expo's Ionicons.
+👉 **Logout** — Sends the refresh token in the request body; backend extracts the `jti`, blacklists it in Redis, and removes it from the database.
 
-👉 **Design Token System** — All colors, radii, spacing, font families, and text style presets live in a single `tokens.ts` file, mirrored 1:1 in `tailwind.config.js`.
+👉 **Forgot Password Flow** — Three steps: enter email → verify 6-digit OTP (Redis-backed, 10-minute TTL, max 5 attempts) → set new password.
 
-👉 **Reusable Component Library** — `Button` (primary / secondary / tertiary / ghost), `Typography` (6 variants × 5 colors), `InputField`, `PasswordField`, `OtpInput`, `AuthHeader`, `SocialSection`, `AuthFooter`.
+👉 **Session Restore** — On app restart, tokens and user are read from SecureStore and validated via `/auth/refresh` — no login prompt if session is still valid.
 
-👉 **Zero Hardcoded Values in Components** — All colors reference `colors.*` from tokens; all typography references `textStyles.*`; layout uses Tailwind spacing tokens.
+### UI / UX
+
+👉 **OTP Input** — Six individual digit boxes with auto-advance, backspace navigation, and filled-state border highlight.
+
+👉 **Field-level Errors** — Zod validation errors from the backend are mapped to individual field names and displayed inline below each input.
+
+👉 **Coming Soon Modal** — Reusable bottom-sheet modal for social auth buttons (Google, Facebook, Fingerprint) and Terms / Privacy Policy links.
+
+👉 **Skeleton Loading** — Animated pulse skeletons replace spinners on the home screen during data load.
+
+👉 **Design Token System** — All colors, spacing, radius, font families, and text style presets live in a single `tokens.ts`, mirrored 1:1 in `tailwind.config.js`.
 
 ---
 
@@ -92,43 +110,101 @@ The codebase follows a strict **design token architecture** — every color, fon
 
 ```
 medical-health/
-├── assets/
-│   ├── icons/
-│   │   ├── ui/                    # Logo SVGs (primary, white, with-text)
-│   │   ├── social/                # Google, Facebook, Fingerprint SVGs
-│   │   └── icons.ts               # Barrel export for all icons
-│   └── images/                    # App icons, splash, banner
-├── src/
-│   ├── app/
-│   │   ├── (auth)/
-│   │   │   ├── _layout.tsx        # Auth stack navigator
-│   │   │   ├── login.tsx          # Log In screen
-│   │   │   ├── login-hello.tsx    # Log In (Hello variant)
-│   │   │   ├── signup.tsx         # Sign Up screen
-│   │   │   ├── forgot-password.tsx
-│   │   │   ├── verify-otp.tsx
-│   │   │   └── set-password.tsx
-│   │   ├── _layout.tsx            # Root layout + font loading
-│   │   └── index.tsx              # Welcome screen
-│   ├── components/
-│   │   ├── ui/
-│   │   │   ├── Button.tsx         # primary | secondary | tertiary | ghost
-│   │   │   ├── Typography.tsx     # description | value | subtitle | label | title | heading
-│   │   │   └── index.ts
-│   │   └── auth/
-│   │       ├── AuthHeader.tsx     # Back arrow + centered title
-│   │       ├── InputField.tsx     # Labelled text input
-│   │       ├── PasswordField.tsx  # Password input with eye toggle
-│   │       ├── OtpInput.tsx       # 6-box OTP input with auto-advance
-│   │       ├── SocialButton.tsx   # Circular social icon button
-│   │       ├── SocialSection.tsx  # "or sign up with" + icon row
-│   │       ├── AuthFooter.tsx     # "Don't have an account? Sign Up"
-│   │       └── index.ts
-│   └── theme/
-│       └── tokens.ts              # Single source of truth: colors, spacing, radius, fonts, textStyles
-├── global.css                     # Tailwind directives for NativeWind
-├── tailwind.config.js             # Mirrors tokens.ts exactly
-└── metro.config.js                # withNativeWind wrapper
+│
+├── backend/                              # NestJS API
+│   ├── prisma/
+│   │   └── schema.prisma                # User + RefreshToken models
+│   └── src/
+│       ├── types/                        # Centralised backend types
+│       │   ├── auth.types.ts            # AuthUser, AuthTokens, JwtPayload
+│       │   └── api.types.ts             # ApiErrorResponse
+│       ├── config/
+│       │   └── configuration.ts         # Typed env config factory
+│       ├── common/
+│       │   └── filters/
+│       │       └── global-exception.filter.ts
+│       ├── prisma/
+│       │   ├── prisma.service.ts
+│       │   └── prisma.module.ts         # @Global()
+│       ├── redis/
+│       │   ├── redis.service.ts         # ioredis client (TLS auto for Upstash)
+│       │   ├── otp.service.ts           # generate / verify / invalidate
+│       │   └── redis.module.ts          # @Global()
+│       ├── posthog/
+│       │   ├── posthog.service.ts       # identify, capture, auth helpers
+│       │   └── posthog.module.ts        # @Global()
+│       ├── auth/
+│       │   ├── guards/
+│       │   │   ├── jwt-auth.guard.ts    # Access token guard
+│       │   │   └── jwt-refresh.guard.ts # Refresh token guard
+│       │   ├── decorators/
+│       │   │   └── current-user.decorator.ts
+│       │   ├── dto/                     # One file per DTO + barrel index.ts
+│       │   ├── services/
+│       │   │   ├── auth.service.ts      # register, login
+│       │   │   ├── token.service.ts     # issueTokens, refresh, logout, blacklist
+│       │   │   └── password.service.ts  # forgotPassword, verifyOtp, setPassword
+│       │   ├── strategies/
+│       │   │   ├── jwt-access.strategy.ts
+│       │   │   └── jwt-refresh.strategy.ts
+│       │   ├── auth.controller.ts       # 8 endpoints under /api/v1/auth
+│       │   └── auth.module.ts
+│       ├── app.controller.ts            # GET /api/v1/health
+│       ├── app.module.ts
+│       └── main.ts                      # Bootstrap: Helmet, CORS, global prefix
+│
+└── src/                                 # Expo / React Native app
+    ├── app/
+    │   ├── (auth)/
+    │   │   ├── login.tsx
+    │   │   ├── signup.tsx
+    │   │   ├── forgot-password.tsx
+    │   │   ├── verify-otp.tsx
+    │   │   └── set-password.tsx
+    │   ├── (home)/
+    │   │   └── index.tsx
+    │   └── _layout.tsx                  # PostHogProvider → Redux → AuthGuard → Stack
+    ├── components/
+    │   ├── ui/
+    │   │   ├── Button.tsx               # primary | secondary | tertiary | ghost
+    │   │   ├── Typography.tsx           # 6 variants × 5 colors
+    │   │   ├── ComingSoonModal.tsx      # Reusable bottom-sheet modal
+    │   │   ├── Skeleton.tsx             # Animated pulse skeleton + SkeletonField
+    │   │   └── skeletons/
+    │   │       ├── AuthFormSkeleton.tsx
+    │   │       └── HomeSkeleton.tsx
+    │   └── auth/
+    │       ├── AuthHeader.tsx
+    │       ├── InputField.tsx           # With inline error display
+    │       ├── PasswordField.tsx        # With show/hide toggle + inline error
+    │       ├── OtpInput.tsx
+    │       ├── SocialSection.tsx        # Triggers ComingSoonModal per button
+    │       ├── SocialButton.tsx
+    │       └── AuthFooter.tsx
+    ├── features/
+    │   └── auth/
+    │       ├── auth.slice.ts            # setCredentials, setTokens, clearAuth, setInitializing
+    │       ├── auth.api.ts              # RTK Query: 7 endpoints
+    │       ├── auth.types.ts            # Re-exports from @/types
+    │       └── hooks/
+    │           ├── useAuth.ts           # All auth actions + PostHog calls
+    │           ├── useAuthInit.ts       # Session restore from SecureStore
+    │           └── useFormError.ts      # Maps RTK error → fieldErrors + globalError
+    ├── features/analytics/
+    │   └── hooks/
+    │       └── useScreenTracking.ts     # posthog.screen() on every route change
+    ├── lib/
+    │   ├── base-query.ts               # baseQueryWithReauth — auto token refresh on 401
+    │   ├── secure-store.ts             # tokenStorage: tokens + user in SecureStore
+    │   └── posthog.ts                  # PostHog client init
+    ├── store/
+    │   ├── index.ts
+    │   └── store.hooks.ts              # useAppDispatch, useAppSelector
+    ├── types/                           # Centralised frontend types
+    │   ├── auth.types.ts               # AuthUser, AuthTokens, AuthState, payloads
+    │   └── api.types.ts                # ApiError
+    └── theme/
+        └── tokens.ts                   # Single source of truth: colors, spacing, radius, fonts, textStyles
 ```
 
 ---
@@ -137,35 +213,66 @@ medical-health/
 
 ### Colors
 
-| Token | Class | Value | Usage |
-|---|---|---|---|
-| `primary` | `bg-primary` / `text-primary` | `#2260FF` | Brand blue, buttons, links |
-| `secondary` | `bg-secondary` / `text-secondary` | `#809CFF` | Input text, placeholders |
-| `tertiary` | `bg-tertiary` / `text-tertiary` | `#CAD6FF` | Secondary button bg |
-| `muted` | `bg-muted` | `#ECF1FF` | Input field backgrounds |
-| `white` | `bg-white` / `text-white` | `#FFFFFF` | Page backgrounds, inverse text |
-| `ink` | `bg-ink` / `text-ink` | `#070707` | Body text, labels |
+| Token | Value | Usage |
+|---|---|---|
+| `primary` | `#2260FF` | Brand blue — buttons, links, active states |
+| `secondary` | `#809CFF` | Placeholders, secondary text |
+| `tertiary` | `#CAD6FF` | Secondary button bg, skeleton pulse |
+| `muted` | `#ECF1FF` | Input field backgrounds, social button bg |
+| `white` | `#FFFFFF` | Page backgrounds, inverse text |
+| `ink` | `#070707` | Body text, labels |
+| `error` | `#EF4444` | Field errors, global error banners |
 
 ### Typography
 
 | Preset | Font | Size | Use |
 |---|---|---|---|
 | `description` | Light | 12px | Body copy, helper text |
-| `value` | Medium | 12px | Links, "Forget Password" |
+| `value` | Medium | 12px | Links, inline actions |
 | `subtitle` | Medium | 14px | Section subtitles |
 | `label` | Medium | 20px | Input field labels |
-| `title` | Medium | 24px | Screen titles ("Welcome") |
+| `title` | Medium | 24px | Screen titles |
 | `heading` | SemiBold | 24px | Auth header titles |
 | `button` | Medium | 24px | Button labels |
 
 ### Border Radius
 
-| Token | Value | Class |
+| Token | Value | Usage |
 |---|---|---|
-| `lg` | 16px | `rounded-lg` |
-| `xl` | 20px | `rounded-xl` |
-| `2xl` | 24px | `rounded-2xl` |
-| `full` | 9999px | `rounded-full` |
+| `lg` | 16px | Cards, modals |
+| `xl` | 20px | Input fields |
+| `2xl` | 24px | Large cards |
+| `full` | 9999px | Buttons, pills, avatars |
+
+---
+
+## <a name="auth-architecture">🔐 Auth Architecture</a>
+
+```
+Register / Login
+      │
+      ▼
+ AuthService ──► TokenService ──► issueTokens()
+                                       │
+                              ┌────────┴────────┐
+                         accessToken        refreshToken
+                         (15 min, JWT)      (7d, JWT + stored in DB)
+                              │                  │
+                         Redux store         SecureStore
+                         (fast reads)        (persistence)
+
+On 401 (access token expired):
+  baseQueryWithReauth ──► POST /auth/refresh ──► new pair issued
+                                                 old jti blacklisted in Redis
+
+On logout:
+  accessToken in header (JwtAuthGuard)
+  refreshToken in body ──► jti extracted ──► blacklisted in Redis + deleted from DB
+
+On app restart:
+  SecureStore ──► refreshToken + user restored ──► POST /auth/refresh
+              ──► fresh tokens dispatched to Redux ──► user lands on home
+```
 
 ---
 
@@ -173,42 +280,87 @@ medical-health/
 
 ### Prerequisites
 
-- [Git](https://git-scm.com/)
 - [Node.js](https://nodejs.org/en) 18+
 - [pnpm](https://pnpm.io/) — `npm install -g pnpm`
-- [Expo Go](https://expo.dev/go) on your device **or** a simulator
+- [PostgreSQL](https://www.postgresql.org/) running locally
 
-> ⚠️ This project uses **Expo SDK 57 + React 19 + React Native 0.86** which require a **development build** — Expo Go is not supported.
-
-### Clone the Repository
+### 1. Clone & Install
 
 ```bash
 git clone https://github.com/httpmutti/medical-health.git
 cd medical-health
-```
 
-### Install Dependencies
-
-```bash
+# Frontend
 pnpm install
+
+# Backend
+cd backend && npm install
 ```
 
-### Run on iOS Simulator
+### 2. Environment Variables
 
-```bash
-npx expo run:ios
+**Frontend** — create `.env` in the project root:
+```env
+EXPO_PUBLIC_API_URL=http://localhost:3000/api/v1
+EXPO_PUBLIC_POSTHOG_API_KEY=your_posthog_key
+EXPO_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 ```
 
-### Run on Android Emulator
+**Backend** — create `.env` in `backend/`:
+```env
+NODE_ENV=development
+PORT=3000
 
-```bash
-npx expo run:android
+DATABASE_URL=postgresql://user:password@localhost:5432/skin_firts_db
+
+JWT_ACCESS_SECRET=your_64_byte_hex_secret
+JWT_REFRESH_SECRET=your_64_byte_hex_secret
+JWT_ACCESS_EXPIRES_IN=15m
+JWT_REFRESH_EXPIRES_IN=7d
+
+REDIS_HOST=your_upstash_host
+REDIS_PORT=6379
+REDIS_PASSWORD=your_upstash_password
+
+POSTHOG_API_KEY=your_posthog_key
+POSTHOG_HOST=https://us.i.posthog.com
 ```
 
-### Start Metro (after a native build exists)
+### 3. Database Setup (first time only)
 
 ```bash
-npx expo start --clear
+psql -U postgres -c "CREATE USER skin_firts_user WITH PASSWORD 'your_password' CREATEDB;"
+psql -U postgres -c "CREATE DATABASE skin_firts_db OWNER skin_firts_user;"
+```
+
+### 4. Run the Backend
+
+```bash
+cd backend
+npm run start:dev
+# Runs prisma migrate deploy automatically, then starts NestJS on :3000
+```
+
+Verify:
+```bash
+curl http://localhost:3000/api/v1/health
+# → { "status": "ok", "db": "connected" }
+```
+
+### 5. Run the Frontend
+
+```bash
+# From project root
+npx expo run:ios      # iOS simulator
+npx expo run:android  # Android emulator
+```
+
+### 6. Useful Backend Commands
+
+```bash
+npm run prisma:migrate   # Create a new migration after schema changes
+npm run prisma:studio    # Open Prisma Studio at http://localhost:5555
+npm run prisma:generate  # Regenerate Prisma client after schema changes
 ```
 
 ---

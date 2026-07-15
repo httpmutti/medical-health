@@ -7,6 +7,7 @@ export const colors = {
   muted: "#ECF1FF",
   white: "#FFFFFF",
   ink: "#070707",
+  error: "#EF4444",
 } as const;
 
 export const spacing = {

@@ -1,43 +1,55 @@
 # Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
-# dependencies
-node_modules/
+# ── Environment variables (never commit real secrets) ────────────────
+.env
+.env.local
+.env.*.local
+backend/.env
+backend/.env.local
 
-# Expo
+# ── Dependencies ─────────────────────────────────────────────────────
+node_modules/
+backend/node_modules/
+
+# ── Expo ─────────────────────────────────────────────────────────────
 .expo/
 dist/
 web-build/
 expo-env.d.ts
 
-# Native
+# ── NestJS build output ───────────────────────────────────────────────
+backend/dist/
+
+# ── Native generated folders ──────────────────────────────────────────
+/ios
+/android
 .kotlin/
+
+# ── Native secrets / certs ────────────────────────────────────────────
 *.orig.*
 *.jks
 *.p8
 *.p12
 *.key
 *.mobileprovision
+*.pem
 
-# Metro
+# ── Metro ─────────────────────────────────────────────────────────────
 .metro-health-check*
 
-# debug
+# ── Debug logs ────────────────────────────────────────────────────────
 npm-debug.*
 yarn-debug.*
 yarn-error.*
 
-# macOS
-.DS_Store
-*.pem
-
-# local env files
-.env*.local
-
-# typescript
+# ── TypeScript build info ─────────────────────────────────────────────
 *.tsbuildinfo
+backend/*.tsbuildinfo
 
-example
+# ── macOS ─────────────────────────────────────────────────────────────
+.DS_Store
+**/.DS_Store
 
-# generated native folders
-/ios
-/android
+# ── Prisma ────────────────────────────────────────────────────────────
+backend/prisma/*.db
+backend/prisma/*.db-journal
